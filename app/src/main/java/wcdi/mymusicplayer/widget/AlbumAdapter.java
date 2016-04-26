@@ -3,6 +3,7 @@ package wcdi.mymusicplayer.widget;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,9 +43,9 @@ public class AlbumAdapter extends GenericAdapter<Album> {
 
         if (convertView == null) {
 
-            mViewHolder = new ViewHolder();
-
             convertView = mLayoutInflater.inflate(mResource, parent, false);
+
+            mViewHolder = new ViewHolder();
 
             mViewHolder.album = (TextView) convertView.findViewById(R.id.fragment_album_album);
             mViewHolder.artist = (TextView) convertView.findViewById(R.id.fragment_album_artist) ;
@@ -55,18 +56,17 @@ public class AlbumAdapter extends GenericAdapter<Album> {
         } else {
 
             mViewHolder = (ViewHolder) convertView.getTag();
+            mViewHolder.albumArt.setImageResource(R.drawable.default_album_art);
         }
 
         mViewHolder.album.setText(album.mAlbum);
         mViewHolder.artist.setText(album.mArtist);
 
-        // ToDo 以下の処理を、非同期でアルバムアートを取得するように変更
         if (album.mAlbumArt != null) {
-            File path = new File(album.mAlbumArt);
-            Bitmap bitmap = new BitmapFactory().decodeFile(path.getAbsolutePath());
-            mViewHolder.albumArt.setImageBitmap(bitmap);
-        } else {
-//            mViewHolder.albumArt.setImageBitmap(R.drawable.default_image);
+            mViewHolder.albumArt.setTag(album.mAlbumArt);
+
+            AlbumArtLoader task = new AlbumArtLoader(mViewHolder.albumArt);
+            task.execute(album.mAlbumArt);
         }
 
         return convertView;
@@ -76,5 +76,35 @@ public class AlbumAdapter extends GenericAdapter<Album> {
         TextView album;
         TextView artist;
         ImageView albumArt;
+    }
+
+    public class AlbumArtLoader extends AsyncTask<String, Bitmap, Bitmap> {
+
+        private ImageView imageView;
+        private String tag;
+
+        public AlbumArtLoader(ImageView imageView) {
+            this.imageView = imageView;
+            this.tag = imageView.getTag().toString();
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+            synchronized (mContext) {
+                File file = new File(strings[0]);
+                return new BitmapFactory().decodeFile(file.getAbsolutePath());
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            if (! this.tag.equals(this.imageView.getTag())) {
+                return;
+            }
+
+            if (result != null && imageView != null) {
+                this.imageView.setImageBitmap(result);
+            }
+        }
     }
 }
