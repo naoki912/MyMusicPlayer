@@ -1,11 +1,9 @@
 package wcdi.mymusicplayer;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.util.AttributeSet;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,9 +14,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import wcdi.mymusicplayer.item.Album;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        PlayingFragment.OnPlayingFragmentInteractionListener {
+        PlayingFragment.OnPlayingFragmentInteractionListener,
+        AlbumFragment.OnAlbumFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,12 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .addToBackStack(PlayingFragment.TAG)
+                        .replace(R.id.fragment, PlayingFragment.newInstance(), PlayingFragment.TAG)
+                        .commit();
             }
         });
 
@@ -44,15 +51,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-    }
 
-    @Override
-    public View onCreateView(String name, Context context, AttributeSet attrs) {
+
+//        setContentView(new FrameLayout(this));
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment, PlayingFragment.newInstance(), PlayingFragment.TAG);
-
-        return super.onCreateView(name, context, attrs);
+                .replace(R.id.fragment, AlbumFragment.newInstance(), AlbumFragment.TAG)
+                .commit();
     }
 
     @Override
@@ -61,7 +66,10 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
+                getSupportFragmentManager().popBackStack();
+            }
+//            super.onBackPressed();
         }
     }
 
@@ -123,6 +131,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPlayingFragmentInteractionStop() {
-        PlayingService.startActionStop();
+        PlayingService.startActionStop(this, "test", "test");
+    }
+
+    @Override
+    public void onAlbumFragmentInteraction(Album album) {
+
+    }
+    @Override
+    public void onClickAlbumFragment() {
+
     }
 }
