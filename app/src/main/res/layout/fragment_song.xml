@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="wcdi.mymusicplayer.SongFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:id="@+id/fragment_song_track"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        android:layout_gravity="center"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="10dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No Title"
+        android:id="@+id/fragment_song_title"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/fragment_song_track"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0:00"
+        android:id="@+id/fragment_song_time"
+        android:layout_below="@+id/fragment_song_title"
+        android:layout_alignLeft="@+id/fragment_song_title"
+        android:layout_alignStart="@+id/fragment_song_title" />
+
+</RelativeLayout>

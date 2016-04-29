@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -20,52 +19,39 @@ public class AlbumAdapter extends GenericAdapter<Album> {
 
     public AlbumAdapter(Context context, int resource) {
         super(context, resource);
-
-        mContext = context;
-
-        mResource = resource;
-
-        mLayoutInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
     }
-
-    private ViewHolder mViewHolder;
-
-    private Context mContext;
-
-    private int mResource;
-
-    private LayoutInflater mLayoutInflater;
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         Album album = getItem(position);
 
+        ViewHolder viewHolder = new ViewHolder();
+
         if (convertView == null) {
 
-            convertView = mLayoutInflater.inflate(mResource, parent, false);
+            convertView = super.getView(position, convertView, parent);
 
-            mViewHolder = new ViewHolder();
+            viewHolder.album = (TextView) convertView.findViewById(R.id.fragment_album_album);
+            viewHolder.artist = (TextView) convertView.findViewById(R.id.fragment_album_artist) ;
+            viewHolder.albumArt = (ImageView) convertView.findViewById(R.id.fragment_album_album_art);
 
-            mViewHolder.album = (TextView) convertView.findViewById(R.id.fragment_album_album);
-            mViewHolder.artist = (TextView) convertView.findViewById(R.id.fragment_album_artist) ;
-            mViewHolder.albumArt = (ImageView) convertView.findViewById(R.id.fragment_album_album_art);
-
-            convertView.setTag(mViewHolder);
+            convertView.setTag(viewHolder);
 
         } else {
 
-            mViewHolder = (ViewHolder) convertView.getTag();
-            mViewHolder.albumArt.setImageResource(R.drawable.default_album_art);
+            viewHolder = (ViewHolder) convertView.getTag();
+            // 一度デフォルトのアルバムアートに戻さないと前回使用したAlbumArtが再表示されてしまう
+            viewHolder.albumArt.setImageResource(R.drawable.default_album_art);
         }
 
-        mViewHolder.album.setText(album.mAlbum);
-        mViewHolder.artist.setText(album.mArtist);
+        viewHolder.album.setText(album.mAlbum);
+        viewHolder.artist.setText(album.mArtist);
 
         if (album.mAlbumArt != null) {
-            mViewHolder.albumArt.setTag(album.mAlbumArt);
+            viewHolder.albumArt.setTag(album.mAlbumArt);
 
-            AlbumArtLoader task = new AlbumArtLoader(mViewHolder.albumArt);
+            AlbumArtLoader task = new AlbumArtLoader(viewHolder.albumArt);
             task.execute(album.mAlbumArt);
         }
 
@@ -90,10 +76,8 @@ public class AlbumAdapter extends GenericAdapter<Album> {
 
         @Override
         protected Bitmap doInBackground(String... strings) {
-            synchronized (mContext) {
-                File file = new File(strings[0]);
-                return new BitmapFactory().decodeFile(file.getAbsolutePath());
-            }
+            File file = new File(strings[0]);
+            return new BitmapFactory().decodeFile(file.getAbsolutePath());
         }
 
         @Override

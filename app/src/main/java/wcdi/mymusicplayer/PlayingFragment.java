@@ -12,35 +12,23 @@ import android.widget.Button;
 
 
 public class PlayingFragment extends Fragment {
-    // private static final String ARG_PARAM1 = "param1";
-
-    // private String mParam1;
 
     public static String TAG = "PlayingFragment";
 
-    private OnPlayingFragmentInteractionListener mListener;
+    private OnPlayingFragmentListener mListener;
 
     public PlayingFragment() {
         // Required empty public constructor
     }
 
     public static PlayingFragment newInstance() {
-        PlayingFragment fragment = new PlayingFragment();
-
-        /*
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        fragment.setArguments(args);
-        */
-
-        return fragment;
+        return new PlayingFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            // mParam = getArguments().getString(ARG_PARAM1);
         }
     }
 
@@ -64,22 +52,14 @@ public class PlayingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    /*
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onPlayingFragmentInteraction(uri);
-        }
-    }
-    */
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnPlayingFragmentInteractionListener) {
-            mListener = (OnPlayingFragmentInteractionListener) context;
+        if (context instanceof OnPlayingFragmentListener) {
+            mListener = (OnPlayingFragmentListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnPlayingFragmentInteractionListener");
+                    + " must implement OnPlayingFragmentListener");
         }
     }
 
@@ -89,7 +69,7 @@ public class PlayingFragment extends Fragment {
         mListener = null;
     }
 
-    public interface OnPlayingFragmentInteractionListener {
+    public interface OnPlayingFragmentListener {
         // 仮
         void onPlayingFragmentInteraction(Uri uri);
         void onPlayingFragmentInteractionPlay();

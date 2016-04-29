@@ -13,13 +13,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 
-import wcdi.mymusicplayer.item.Album;
+import java.util.ArrayList;
+
+import wcdi.mymusicplayer.item.Song;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        PlayingFragment.OnPlayingFragmentInteractionListener,
-        AlbumFragment.OnAlbumFragmentInteractionListener {
+        PlayingFragment.OnPlayingFragmentListener,
+        AlbumFragment.OnAlbumFragmentListener,
+        SongFragment.OnSongFragmentListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +39,15 @@ public class MainActivity extends AppCompatActivity
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
-                getSupportFragmentManager()
+/*                getSupportFragmentManager()
                         .beginTransaction()
                         .addToBackStack(PlayingFragment.TAG)
                         .replace(R.id.fragment, PlayingFragment.newInstance(), PlayingFragment.TAG)
+                        .commit();*/
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .addToBackStack(SongFragment.TAG)
+                        .replace(R.id.fragment, SongFragment.newInstance(), SongFragment.TAG)
                         .commit();
             }
         });
@@ -135,11 +144,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onAlbumFragmentInteraction(Album album) {
+    public void onItemClickAlbumFragment(ArrayList<Song> songArrayList) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .addToBackStack(SongFragment.TAG)
+                .replace(R.id.fragment, SongFragment.newInstance(songArrayList), SongFragment.TAG)
+                .commit();
+    }
+
+    @Override
+    public void onSongFragmentInteraction(Song song) {
 
     }
+
     @Override
-    public void onClickAlbumFragment() {
+    public void onItemClickSongFragment(ArrayAdapter<Song> songArrayAdapter, int position) {
 
     }
 }

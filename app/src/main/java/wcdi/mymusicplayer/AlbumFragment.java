@@ -13,13 +13,16 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 
+import java.util.ArrayList;
+
 import wcdi.mymusicplayer.item.Album;
+import wcdi.mymusicplayer.item.Song;
 import wcdi.mymusicplayer.widget.AlbumAdapter;
 
 
 public class AlbumFragment extends Fragment {
 
-    private OnAlbumFragmentInteractionListener mListener;
+    private OnAlbumFragmentListener mListener;
 
     private AlbumAdapter mAdapter;
     private AbsListView  mListView;
@@ -61,6 +64,34 @@ public class AlbumFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                /**
+                 * ここの処理は、Activity側で行った方がいいかも？
+                 * mListener.onItemClickAlbumFragment()は、あくまで "Itemをクリックした際のListener" なので、
+                 * どのItemがクリックされたという情報だけをActivityに投げて、
+                 * そっち側でSongFragmentに渡すアイテムを用意したほうが良いんじゃないだろうか
+                 */
+
+                ArrayList<Song> songArrayList = new ArrayList<>();
+
+                ContentResolver contentResolver = getActivity().getApplicationContext().getContentResolver();
+
+                Cursor cursor = contentResolver.query(
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        Song.COLUMNS,
+                        MediaStore.Audio.Media.ALBUM_ID + "=?",
+                        new String[] {
+                                String.valueOf(((Album) parent.getAdapter().getItem(position)).mAlbumId)
+                        },
+                        null
+                );
+
+                while (cursor.moveToNext()) {
+                    songArrayList.add(new Song(cursor));
+                }
+
+                cursor.close();
+
+                mListener.onItemClickAlbumFragment(songArrayList);
             }
         });
 
@@ -74,18 +105,8 @@ public class AlbumFragment extends Fragment {
                 null
         );
 
-        cursor.moveToFirst();
-
-/*        if (mListView.getCount() == 0) {
-            while (cursor.moveToNext())  {
-                mAdapter.add(new Album(cursor));
-            }
-        }*/
-
-        if (mListView.getCount() == 0) {
-            do {
-                mAdapter.add(new Album(cursor));
-            } while (cursor.moveToNext());
+        while (cursor.moveToNext()) {
+            mAdapter.addAll(new Album(cursor));
         }
 
         cursor.close();
@@ -94,11 +115,11 @@ public class AlbumFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnAlbumFragmentInteractionListener) {
-            mListener = (OnAlbumFragmentInteractionListener) context;
+        if (context instanceof OnAlbumFragmentListener) {
+            mListener = (OnAlbumFragmentListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnAlbumFragmentInteractionListener");
+                    + " must implement OnAlbumFragmentListener");
         }
     }
 
@@ -108,8 +129,7 @@ public class AlbumFragment extends Fragment {
         mListener = null;
     }
 
-    public interface OnAlbumFragmentInteractionListener {
-        void onAlbumFragmentInteraction(Album album);
-        void onClickAlbumFragment();
+    public interface OnAlbumFragmentListener {
+        void onItemClickAlbumFragment(ArrayList<Song> songArrayList);
     }
 }
