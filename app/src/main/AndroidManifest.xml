@@ -21,9 +21,15 @@
             </intent-filter>
         </activity>
 
+<!--        <service
+            android:name=".PlayingIntentService"
+            android:exported="false" />-->
         <service
             android:name=".PlayingService"
-            android:exported="false"></service>
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity android:name=".PlayingActivity"></activity>
     </application>
 
 </manifest>

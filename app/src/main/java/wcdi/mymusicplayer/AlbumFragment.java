@@ -129,6 +129,12 @@ public class AlbumFragment extends Fragment {
         mListener = null;
     }
 
+    // ToDo AlbumFragment, SongFragment, PlayingFragmentのonSaveInstanceStateを実装する
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
     public interface OnAlbumFragmentListener {
         void onItemClickAlbumFragment(ArrayList<Song> songArrayList);
     }

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 
 public class PlayingFragment extends Fragment {
@@ -41,11 +42,11 @@ public class PlayingFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Button button = (Button) view.findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.fragment_playing_start).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onPlayingFragmentInteractionPlay();
+                Toast.makeText(getActivity(), "stop1", Toast.LENGTH_SHORT);
+                mListener.onClickPausePlayingFragment();
             }
         });
 
@@ -70,9 +71,6 @@ public class PlayingFragment extends Fragment {
     }
 
     public interface OnPlayingFragmentListener {
-        // 仮
-        void onPlayingFragmentInteraction(Uri uri);
-        void onPlayingFragmentInteractionPlay();
-        void onPlayingFragmentInteractionStop();
+        void onClickPausePlayingFragment();
     }
 }

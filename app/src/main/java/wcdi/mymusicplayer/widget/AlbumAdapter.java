@@ -75,12 +75,6 @@ public class AlbumAdapter extends GenericAdapter<Album> {
         }
 
         @Override
-        protected Bitmap doInBackground(String... strings) {
-            File file = new File(strings[0]);
-            return new BitmapFactory().decodeFile(file.getAbsolutePath());
-        }
-
-        @Override
         protected void onPostExecute(Bitmap result) {
             if (! this.tag.equals(this.imageView.getTag())) {
                 return;
@@ -89,6 +83,12 @@ public class AlbumAdapter extends GenericAdapter<Album> {
             if (result != null && imageView != null) {
                 this.imageView.setImageBitmap(result);
             }
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+            File file = new File(strings[0]);
+            return new BitmapFactory().decodeFile(file.getAbsolutePath());
         }
     }
 }

@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,7 +22,11 @@ import wcdi.mymusicplayer.widget.SongAdapter;
 
 public class SongFragment extends Fragment {
 
-    private static final String SONG_LIST = "songList";
+    /**
+     * いずれ PlayingActivity に乗り換える
+     */
+
+    private static final String EXTRA_SERIALIZABLE__SONG_ARRAY_LIST = "songList";
 
     private ArrayList<Song> mSongArrayList;
 
@@ -42,10 +45,10 @@ public class SongFragment extends Fragment {
     }
 
     public static SongFragment newInstance(ArrayList<Song> songArrayList) {
-        SongFragment fragment = new SongFragment();
-
         Bundle args = new Bundle();
-        args.putSerializable(SONG_LIST, songArrayList);
+        args.putSerializable(EXTRA_SERIALIZABLE__SONG_ARRAY_LIST, songArrayList);
+
+        SongFragment fragment = new SongFragment();
         fragment.setArguments(args);
 
         return fragment;
@@ -55,7 +58,7 @@ public class SongFragment extends Fragment {
         SongFragment fragment = new SongFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable(SONG_LIST, songs);
+        args.putSerializable(EXTRA_SERIALIZABLE__SONG_ARRAY_LIST, songs);
         fragment.setArguments(args);
 
         return fragment;
@@ -66,8 +69,8 @@ public class SongFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            Bundle bundle = this.getArguments();
-            mSongArrayList = (ArrayList<Song>) bundle.getSerializable(SONG_LIST);
+            Bundle bundle = getArguments();
+            mSongArrayList = (ArrayList<Song>) bundle.getSerializable(EXTRA_SERIALIZABLE__SONG_ARRAY_LIST);
         }
     }
 
@@ -90,6 +93,7 @@ public class SongFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mListener.onItemClickSongFragment((ArrayList<Song>) mAdapter.getAll(), position);
             }
         });
 
@@ -147,7 +151,7 @@ public class SongFragment extends Fragment {
 
     public interface OnSongFragmentListener {
         void onSongFragmentInteraction(Song song);
-        void onItemClickSongFragment(ArrayAdapter<Song> songArrayAdapter, int position);
+        void onItemClickSongFragment(ArrayList<Song> songArrayList, int position);
     }
 }
 

@@ -1,9 +1,15 @@
 package wcdi.mymusicplayer;
 
-import android.net.Uri;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,7 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 
@@ -25,6 +30,11 @@ public class MainActivity extends AppCompatActivity
         AlbumFragment.OnAlbumFragmentListener,
         SongFragment.OnSongFragmentListener {
 
+//    PlayingService mPlayingService;
+    Messenger mService;
+
+    Boolean mBound = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,21 +43,17 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        assert fab != null;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-
-/*                getSupportFragmentManager()
-                        .beginTransaction()
-                        .addToBackStack(PlayingFragment.TAG)
-                        .replace(R.id.fragment, PlayingFragment.newInstance(), PlayingFragment.TAG)
-                        .commit();*/
+/*                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+//                startActivity(PlayingActivity.createIntent(getApplicationContext()));
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .addToBackStack(SongFragment.TAG)
-                        .replace(R.id.fragment, SongFragment.newInstance(), SongFragment.TAG)
+                        .addToBackStack(ArtistFragment.TAG)
+                        .replace(R.id.fragment, ArtistFragment.newInstance())
                         .commit();
             }
         });
@@ -130,17 +136,65 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPlayingFragmentInteraction(Uri uri) {
+    protected void onStart() {
+        super.onStart();
+
+        /** http://developer.android.com/intl/ja/guide/components/bound-services.html
+         * アクティビティが見えている間のみサービスとやり取りする必要がある場合は、
+         * onStart() の間にバインドし、onStop() の間にアンバインドします。
+         * アクティビティがバックグラウンドで停止している間も応答を受け取りたい場合は、
+         * onCreate() の間にバインドし、onDestroy() の間にアンバインド */
+        Intent intent = new Intent(this, PlayingService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
-    public void onPlayingFragmentInteractionPlay() {
-        PlayingService.startActionPlay(this);
+    protected void onStop() {
+        super.onStop();
+
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
     }
 
-    @Override
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+//            PlayingService.PlayingBinder playingBinder = (PlayingService.PlayingBinder) service;
+//            mPlayingService = playingBinder.getService();
+            mService = new Messenger(service);
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mBound = false;
+        }
+    };
+
+    // Serviceの停止
+/*    @Override
     public void onPlayingFragmentInteractionStop() {
-        PlayingService.startActionStop(this, "test", "test");
+        // 上手く停止しないのでもう少し調べる
+        if (! mBound) return;
+
+        stopService(new Intent(MainActivity.this, PlayingService.class));
+//            mPlayingService.stopSelf();
+        unbindService(mConnection);
+        mBound = false;
+    }*/
+
+    @Override
+    public void onClickPausePlayingFragment() {
+        if (! mBound) return;
+
+        Message message = Message.obtain(null, PlayingService.MSG_PLAYING_PLAY_PAUSE);
+        try {
+            mService.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -158,7 +212,33 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemClickSongFragment(ArrayAdapter<Song> songArrayAdapter, int position) {
+    public void onItemClickSongFragment(ArrayList<Song> songArrayList, int position) {
+//        PlayingIntentService.startActionPlay(this, songArrayList, position);
+//        if (mBound) {
+//            Intent intent = new Intent(this, PlayingService.class);
+//            startService(intent);
+//            mPlayingService.start(songArrayList, position);
+//        }
+        if (! mBound) return;
 
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(PlayingService.EXTRA_SERIALIZABLE__SONG_ARRAY_LIST, songArrayList);
+        bundle.putInt(PlayingService.EXTRA_INT__POSITION, position);
+
+        Message message_preparetion = Message.obtain(null, PlayingService.MSG_PREPARATION_SONG_LIST, bundle);
+        Message message_start = Message.obtain(null, PlayingService.MSG_PLAYING_START);
+
+        try {
+            mService.send(message_preparetion);
+            mService.send(message_start);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .addToBackStack(PlayingFragment.TAG)
+                .replace(R.id.fragment, PlayingFragment.newInstance(), SongFragment.TAG)
+                .commit();
     }
 }
