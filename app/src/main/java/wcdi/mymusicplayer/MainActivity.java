@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity
         SongFragment.OnSongFragmentListener {
 
 //    PlayingService mPlayingService;
-    Messenger mService;
+    Messenger mMessenger;
 
     Boolean mBound = false;
 
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity
         public void onServiceConnected(ComponentName name, IBinder service) {
 //            PlayingService.PlayingBinder playingBinder = (PlayingService.PlayingBinder) service;
 //            mPlayingService = playingBinder.getService();
-            mService = new Messenger(service);
+            mMessenger = new Messenger(service);
             mBound = true;
         }
 
@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity
 
         Message message = Message.obtain(null, PlayingService.MSG_PLAYING_PLAY_PAUSE);
         try {
-            mService.send(message);
+            mMessenger.send(message);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -225,12 +225,12 @@ public class MainActivity extends AppCompatActivity
         bundle.putSerializable(PlayingService.EXTRA_SERIALIZABLE__SONG_ARRAY_LIST, songArrayList);
         bundle.putInt(PlayingService.EXTRA_INT__POSITION, position);
 
-        Message message_preparetion = Message.obtain(null, PlayingService.MSG_PREPARATION_SONG_LIST, bundle);
+        Message message_preparation = Message.obtain(null, PlayingService.MSG_PREPARATION_SONG_LIST, bundle);
         Message message_start = Message.obtain(null, PlayingService.MSG_PLAYING_START);
 
         try {
-            mService.send(message_preparetion);
-            mService.send(message_start);
+            mMessenger.send(message_preparation);
+            mMessenger.send(message_start);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
