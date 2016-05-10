@@ -24,6 +24,8 @@ public class ArtistFragment extends Fragment {
 
     public static String TAG = "ArtistFragment";
 
+    public static String TAB_TITLE = "Artists";
+
     public ArtistFragment() {
     }
 

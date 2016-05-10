@@ -37,6 +37,8 @@ public class SongFragment extends Fragment {
 
     public static String TAG = "SongFragment";
 
+    public static String TAB_TITLE = "Songs";
+
     public SongFragment() {
     }
 

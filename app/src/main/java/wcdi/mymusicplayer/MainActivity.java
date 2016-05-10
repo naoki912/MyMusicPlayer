@@ -47,16 +47,12 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-/*                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
-//                startActivity(PlayingActivity.createIntent(getApplicationContext()));
+                startActivity(PlayingActivity.createIntent(getApplicationContext()));
 /*                getSupportFragmentManager()
                         .beginTransaction()
                         .addToBackStack(ArtistFragment.TAG)
                         .replace(R.id.fragment, ArtistFragment.newInstance())
                         .commit();*/
-                Intent intent = new Intent(getApplicationContext(), MainTabbedActivity.class);
-                startActivity(intent);
             }
         });
 
@@ -69,11 +65,11 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
 //        setContentView(new FrameLayout(this));
+
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment, AlbumFragment.newInstance(), AlbumFragment.TAG)
+                .replace(R.id.fragment, TabbedFragment.newInstance(), TabbedFragment.TAG)
                 .commit();
     }
 
@@ -237,12 +233,6 @@ public class MainActivity extends AppCompatActivity
             mMessenger.send(message);
         } catch (RemoteException e) {
         }
-
-/*        getSupportFragmentManager()
-                .beginTransaction()
-                .addToBackStack(PlayingFragment.TAG)
-                .replace(R.id.fragment, PlayingFragment.newInstance(), SongFragment.TAG)
-                .commit();*/
 
         startActivity(PlayingActivity.createIntent(getApplicationContext()));
 

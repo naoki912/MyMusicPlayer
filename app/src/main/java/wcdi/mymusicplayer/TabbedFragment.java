@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,10 +39,7 @@ public class TabbedFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getActivity().getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
 
         mViewPager = (ViewPager) view.findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -66,7 +62,7 @@ public class TabbedFragment extends Fragment {
                 case 1:
                     return ArtistFragment.newInstance();
                 case 2:
-                    return AlbumFragment.newInstance();
+                    return ArtistFragment.newInstance();
             }
             return null;
         }
@@ -81,11 +77,11 @@ public class TabbedFragment extends Fragment {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return AlbumFragment.TAG;
+                    return AlbumFragment.TAB_TITLE;
                 case 1:
-                    return SongFragment.TAG;
+                    return SongFragment.TAB_TITLE;
                 case 2:
-                    return AlbumFragment.TAG;
+                    return ArtistFragment.TAB_TITLE;
             }
             return null;
         }

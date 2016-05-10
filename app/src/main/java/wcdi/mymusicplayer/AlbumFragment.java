@@ -29,6 +29,9 @@ public class AlbumFragment extends Fragment {
 
     public static String TAG = "AlbumFragment";
 
+    // 後でstringとかで置き換える
+    public static String TAB_TITLE = "Albums";
+
     public AlbumFragment() {
     }
 

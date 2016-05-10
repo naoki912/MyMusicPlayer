@@ -24,7 +24,7 @@ public class MainTabbedActivity extends AppCompatActivity
         implements AlbumFragment.OnAlbumFragmentListener {
 
     /** とりあえず試しでタブの実装
-     * 最終的にこっち側で実装する */
+     * 最終的にはTabbedFragmentに実装する */
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
