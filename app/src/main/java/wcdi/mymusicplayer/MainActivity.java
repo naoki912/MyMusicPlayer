@@ -50,11 +50,13 @@ public class MainActivity extends AppCompatActivity
 /*                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
 //                startActivity(PlayingActivity.createIntent(getApplicationContext()));
-                getSupportFragmentManager()
+/*                getSupportFragmentManager()
                         .beginTransaction()
                         .addToBackStack(ArtistFragment.TAG)
                         .replace(R.id.fragment, ArtistFragment.newInstance())
-                        .commit();
+                        .commit();*/
+                Intent intent = new Intent(getApplicationContext(), MainTabbedActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -173,6 +175,10 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    /**
+     * 以下Listener
+     */
+
     // Serviceの停止
 /*    @Override
     public void onPlayingFragmentInteractionStop() {
@@ -225,20 +231,20 @@ public class MainActivity extends AppCompatActivity
         bundle.putSerializable(PlayingService.EXTRA_SERIALIZABLE__SONG_ARRAY_LIST, songArrayList);
         bundle.putInt(PlayingService.EXTRA_INT__POSITION, position);
 
-        Message message_preparation = Message.obtain(null, PlayingService.MSG_PREPARATION_SONG_LIST, bundle);
-        Message message_start = Message.obtain(null, PlayingService.MSG_PLAYING_START);
+        Message message = Message.obtain(null, PlayingService.MSG_PREPARATION_SONG_LIST, bundle);
 
         try {
-            mMessenger.send(message_preparation);
-            mMessenger.send(message_start);
+            mMessenger.send(message);
         } catch (RemoteException e) {
-            e.printStackTrace();
         }
 
-        getSupportFragmentManager()
+/*        getSupportFragmentManager()
                 .beginTransaction()
                 .addToBackStack(PlayingFragment.TAG)
                 .replace(R.id.fragment, PlayingFragment.newInstance(), SongFragment.TAG)
-                .commit();
+                .commit();*/
+
+        startActivity(PlayingActivity.createIntent(getApplicationContext()));
+
     }
 }
