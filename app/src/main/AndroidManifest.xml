@@ -32,10 +32,6 @@
             android:exported="true" />
 
         <activity android:name=".PlayingActivity" />
-        <activity
-            android:name=".MainTabbedActivity"
-            android:label="@string/title_activity_main_tabbed"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
