@@ -30,6 +30,13 @@ public class MainActivity extends AppCompatActivity
         AlbumFragment.OnAlbumFragmentListener,
         SongFragment.OnSongFragmentListener {
 
+
+
+//    これはコメントです
+//    プルリクテスト
+
+
+
 //    PlayingService mPlayingService;
     Messenger mMessenger;
 
