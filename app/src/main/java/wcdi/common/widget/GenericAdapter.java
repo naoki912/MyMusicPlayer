@@ -34,7 +34,8 @@ public class GenericAdapter<T> extends BaseAdapter {
 
         mLock = new Object();
 
-        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayoutInflater = LayoutInflater.from(context);
     }
 
     public GenericAdapter(Context context, int resource) {
