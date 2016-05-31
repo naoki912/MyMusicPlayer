@@ -14,6 +14,8 @@ import android.os.Messenger;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+import android.widget.RemoteViews;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ public class PlayingService extends Service {
     private static boolean isRunning = false;
 
     private final Messenger mMessenger = new Messenger(new IncomingMessageHandler());
+
+    private static final String LOGTAG = "PlayingService";
 
     // Messages
     // ToDo 命名規則を考える
@@ -76,29 +80,31 @@ public class PlayingService extends Service {
     public void onCreate() {
         super.onCreate();
 
-//        startForeground();
-
         mMediaPlayer = new MediaPlayer();
 
-        showNotification();
+//        showNotification();
 
         isRunning = true;
     }
 
     private void showNotification() {
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, PlayingActivity.class), 0);
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
-                .setTicker("ticker")
-                .setContentTitle("contentTitle")
-                .setContentText("contentText")
+//                .setTicker("ticker")
+//                .setContentTitle("contentTitle")
+//                .setContentText("contentText")
                 .setContentIntent(contentIntent)
+                .setShowWhen(false)
+                .setContent(new RemoteViews(getPackageName(), R.layout.notification))
                 .build();
 
-        mNotificationManager.notify(12345, notification);
+        // ToDo どこかにServiceを止めるボタンを追加する
+        startForeground(R.string.notification_id, notification);
+//        mNotificationManager.notify(R.string.notification_id, notification);
     }
 
     @Override
@@ -114,7 +120,11 @@ public class PlayingService extends Service {
         super.onDestroy();
 
         // Serviceが終了した途端通知が消えるので、消したくない場合はここをコメントアウト
-        mNotificationManager.cancel(12345);
+        try {
+            mNotificationManager.cancel(R.string.notification_id);
+        } catch (NullPointerException e) {
+            Log.d(LOGTAG, "onDestroy, mNotificationManager, NullPointerException");
+        }
 
         isRunning = false;
     }
@@ -182,7 +192,6 @@ public class PlayingService extends Service {
                 case MSG_REGISTER_CLIENT:
                     mClients.add(msg.replyTo);
                     break;
-
                 case MSG_UNREGISTER_CLIENT:
                     mClients.remove(msg.replyTo);
                     break;
@@ -210,6 +219,10 @@ public class PlayingService extends Service {
                     }
 
                     mMediaPlayer.start();
+
+                    // onCreateに記述するとアプリの起動時に通知が表示されてしまうので
+                    // いい方法を見つけられるまでここで実行
+                    showNotification();
 
                     break;
 
