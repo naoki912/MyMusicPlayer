@@ -112,6 +112,8 @@ public class AlbumAdapter extends GenericAdapter<Album> {
      * キャッシュする上限をつけてあげないと、アルバムが大量にある際にメモリがヤバイことになりそう
      *
      * 画面遷移した際もずっとキャッシュとして持っておきたい場合はstaticクラスに変更すれば可能
+     * もしくは、Fragment自体にキャッシュ用のHashMapを持たせておいて、onSaveInstanceState
+     * あたりで使い回す
      */
     public class ImageCache {
 
