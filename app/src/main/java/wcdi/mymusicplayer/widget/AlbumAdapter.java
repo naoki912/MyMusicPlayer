@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.HashMap;
 
 import wcdi.common.widget.GenericAdapter;
 import wcdi.mymusicplayer.R;
@@ -17,8 +18,12 @@ import wcdi.mymusicplayer.item.Album;
 
 public class AlbumAdapter extends GenericAdapter<Album> {
 
+    private static ImageCache mImageCache;
+
     public AlbumAdapter(Context context, int resource) {
         super(context, resource);
+
+        mImageCache = new ImageCache();
     }
 
     @Override
@@ -58,7 +63,7 @@ public class AlbumAdapter extends GenericAdapter<Album> {
         return convertView;
     }
 
-    static class ViewHolder {
+    class ViewHolder {
         TextView album;
         TextView artist;
         ImageView albumArt;
@@ -87,8 +92,46 @@ public class AlbumAdapter extends GenericAdapter<Album> {
 
         @Override
         protected Bitmap doInBackground(String... strings) {
-            File file = new File(strings[0]);
-            return new BitmapFactory().decodeFile(file.getAbsolutePath());
+            synchronized (getContext()) {
+
+                Bitmap bitmap = mImageCache.getImage(strings[0]);
+
+                if (bitmap == null) {
+                    File file = new File(strings[0]);
+                    bitmap = new BitmapFactory().decodeFile(file.getAbsolutePath());
+                    mImageCache.setImage(strings[0], bitmap);
+                }
+
+                return bitmap;
+            }
+        }
+    }
+
+    /**
+     * 現状だとリストをすべてキャッシュにしてしまっているが
+     * キャッシュする上限をつけてあげないと、アルバムが大量にある際にメモリがヤバイことになりそう
+     *
+     * 画面遷移した際もずっとキャッシュとして持っておきたい場合はstaticクラスに変更すれば可能
+     */
+    public class ImageCache {
+
+        private HashMap<String, Bitmap> cache = new HashMap<>();
+
+        public Bitmap getImage(String key) {
+            if (cache.containsKey(key)) {
+                return cache.get(key);
+            }
+
+            return null;
+        }
+
+        public void setImage(String key, Bitmap image) {
+            cache.put(key, image);
+        }
+
+        public void clearCache() {
+            cache = null;
+            cache = new HashMap<>();
         }
     }
 }
